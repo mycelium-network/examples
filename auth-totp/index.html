@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.15.0/css/mdb.min.css" rel="stylesheet">
+
+    <title>Example: Authenticate with Demo Users and TOTP Token</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="lead mt-4">Authenticate with Demo Users and TOTP Token</h1>
+        <p>Authenticate as the following user by clicking the buttons:</p>
+        <div class="row">
+            <div class="col-4">
+                <button class="btn blue-gradient">John Doe</button>
+            </div>
+            <div class="col-4">
+                <button class="btn blue-gradient">Alice</button>
+            </div>
+            <div class="col-4">
+                <button class="btn blue-gradient">Bob</button>
+            </div>
+        </div>
+        <p>Enable TOTP by clicking the button:</p>
+        <button class="btn blue-gradient">Enable TOTP</button>
+
+        <h2>QR-Code</h2>
+        <p>
+            Scan the QR-Code with authenticator apps like "Google Authenticator:"
+        </p>
+        <div>
+            <canvas id="qr"></canvas>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.15.0/js/mdb.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        const API_ENDPOINT = "https://mycelium-api.herokuapp.com"
+        // Insert your example javascript here
+        function createQRCode(data) {
+            var qr = new QRious({
+                element: document.getElementById('qr'),
+                value: data
+            });
+        }
+
+        function authenticate(username, password){
+            $.ajax({
+            accepts: {
+                mycustomtype: 'application/x-some-custom-type'
+            },
+
+            // Instructions for how to deserialize a `mycustomtype`
+            converters: {
+                'text mycustomtype': function (result) {
+                    // Do Stuff
+                    return newresult;
+                }
+            },
+
+            // Expect a `mycustomtype` back from server
+            dataType: 'mycustomtype'
+            });
+        }
+
+        window.onload = function(){
+            createQRCode("TEST");
+        };
+    </script>
+</body>
+
+</html>
