@@ -38,6 +38,9 @@
           </select>
         </div>
 
+        <h2>Scan:</h2>
+        <pre><code id="scan"></code></pre>
+
         <h2>Result:</h2>
         <pre><code id="result"></code></pre>
     </div>
@@ -85,13 +88,12 @@
                 codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                   if (result) {
                     console.log(result)
+                    document.getElementById('scan').textContent = result.text
                     var xhr = new XMLHttpRequest()
                     xhr.responseType = "json"
                     xhr.open("GET", "https://mycelium-api.herokuapp.com/auth/autocomplete/"+result.text,true)
                     xhr.onload = function(){
-                      var json = JSON.parse(xhr.responseText)
-                      console.log(xhr.response)
-                      document.getElementById('result').textContent = json
+                      document.getElementById('result').textContent = xhr.responseText
                     }
                     xhr.send(null)
                   }
