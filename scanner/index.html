@@ -43,6 +43,9 @@
 
         <h2>Result:</h2>
         <pre><code id="result"></code></pre>
+
+        <h2>Preview</h2>
+        <div class="container" id="preview"></div>
     </div>
 
     <!-- Optional JavaScript -->
@@ -93,7 +96,13 @@
                     xhr.responseType = "json"
                     xhr.open("GET", "https://mycelium-api.herokuapp.com/auth/autocomplete/"+result.text,true)
                     xhr.onload = function(){
-                      document.getElementById('result').textContent = JSON.stringify(xhr.response)
+                      var json = xhr.response
+                      document.getElementById('result').textContent = JSON.stringify(json)
+                      var preview = document.getElementById('preview')
+                      Object.keys(json).forEach(function (key) { 
+                        preview.innerHTML += "<h3>"+json[key].title+" written by "+json[key].authors[0].name+"<h3><img src='"+json[key].cover.large+"'>"
+                      })
+
                     }
                     xhr.send(null)
                   }
