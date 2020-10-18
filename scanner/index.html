@@ -89,7 +89,8 @@
                     xhr.responseType = "json"
                     xhr.open("GET", "https://mycelium-api.herokuapp.com/auth/autocomplete/"+result.text,true)
                     xhr.onload = function(){
-                      var json = JSON.parse(xhr.response)
+                      var json = JSON.parse(xhr.responseText)
+                      console.log(xhr.response)
                       document.getElementById('result').textContent = json
                     }
                     xhr.send(null)
