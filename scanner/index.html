@@ -38,6 +38,8 @@
           </select>
         </div>
 
+        <a class="button" id="simulateButton">Simulate Scan</a>
+
         <h2>Scan:</h2>
         <pre><code id="scan"></code></pre>
 
@@ -67,74 +69,86 @@
           let selectedDeviceId;
           const codeReader = new ZXing.BrowserMultiFormatReader()
           console.log('ZXing code reader initialized')
-          codeReader.listVideoInputDevices()
-            .then((videoInputDevices) => {
-              const sourceSelect = document.getElementById('sourceSelect')
-              selectedDeviceId = videoInputDevices[0].deviceId
-              if (videoInputDevices.length >= 1) {
-                videoInputDevices.forEach((element) => {
-                  const sourceOption = document.createElement('option')
-                  sourceOption.text = element.label
-                  sourceOption.value = element.deviceId
-                  sourceSelect.appendChild(sourceOption)
-                })
+          if(codeReader.hasOwnProperty("listVideoInputDevices")) {
+            codeReader.listVideoInputDevices()
+              .then((videoInputDevices) => {
+                const sourceSelect = document.getElementById('sourceSelect')
+                selectedDeviceId = videoInputDevices[0].deviceId
+                if (videoInputDevices.length >= 1) {
+                  videoInputDevices.forEach((element) => {
+                    const sourceOption = document.createElement('option')
+                    sourceOption.text = element.label
+                    sourceOption.value = element.deviceId
+                    sourceSelect.appendChild(sourceOption)
+                  })
 
-                sourceSelect.onchange = () => {
-                  selectedDeviceId = sourceSelect.value;
-                };
+                  sourceSelect.onchange = () => {
+                    selectedDeviceId = sourceSelect.value;
+                  };
 
-                const sourceSelectPanel = document.getElementById('sourceSelectPanel')
-                sourceSelectPanel.style.display = 'block'
-              }
+                  const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+                  sourceSelectPanel.style.display = 'block'
+                }
 
-              document.getElementById('startButton').addEventListener('click', () => {
-                codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                  if (result) {
-                    console.log(result)
-                    document.getElementById('scan').textContent = result.text
-                    var xhr = new XMLHttpRequest()
-                    xhr.responseType = "json"
-                    xhr.open("GET", "https://mycelium-api.herokuapp.com/auth/autocomplete/"+result.text,true)
-                    xhr.onload = function(){
-                      var json = xhr.response
-                      document.getElementById('result').textContent = JSON.stringify(json)
-                      var preview = document.getElementById('preview')
-                      var html = "";
-                      Object.keys(json).forEach(function (key) { 
-                        html = "<h3>"+json[key].title+"<h3>" 
-                        if(json[key].hasOwnProperty(authors)){
-                          var author = ""
-                          Object.keys(json[key].authors).forEach(function(key1){
-                            author += json[key].authors[key1].name + ", "
-                          })
-                          html += "Author: "+author
-                        }
-                        html += "<img src='"+json[key].cover.large+"'>"
-                      })
-                      preview.innerHTML = html;
-
+                document.getElementById('startButton').addEventListener('click', () => {
+                  codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                    if (result) {
+                      callISBNApi(result)
                     }
-                    xhr.send(null)
-                  }
-                  if (err && !(err instanceof ZXing.NotFoundException)) {
-                    console.error(err)
-                    document.getElementById('result').textContent = err
-                  }
+                    if (err && !(err instanceof ZXing.NotFoundException)) {
+                      console.error(err)
+                      document.getElementById('result').textContent = err
+                    }
+                  })
+                  console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
                 })
-                console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
-              })
 
-              document.getElementById('resetButton').addEventListener('click', () => {
-                codeReader.reset()
-                document.getElementById('result').textContent = '';
-                console.log('Reset.')
-              })
+                document.getElementById('resetButton').addEventListener('click', () => {
+                  codeReader.reset()
+                  document.getElementById('result').textContent = '';
+                  console.log('Reset.')
+                })
 
-            })
-            .catch((err) => {
-              console.error(err)
+              })
+              .catch((err) => {
+                console.error(err)
+              })
+            }
+
+            document.getElementById('simulateButton').addEventListener('click', () => {
+              var result = {text:"9783442161447"};
+              callISBNApi(result);
             })
         })
+
+        function callISBNApi(result) {
+            console.log(result)
+            document.getElementById('scan').textContent = result.text
+            var xhr = new XMLHttpRequest()
+            xhr.responseType = "json"
+            xhr.open("GET", "https://mycelium-api.herokuapp.com/auth/autocomplete/"+result.text,true)
+            xhr.onload = function(){
+              var json = xhr.response
+              console.log(json)
+              document.getElementById('result').textContent = JSON.stringify(json)
+              var preview = document.getElementById('preview')
+              var html = "";
+              Object.keys(json).forEach(function (key) { 
+                html = "<h3>"+json[key].title+"<h3>" 
+                if(json[key].hasOwnProperty("authors")){
+                  var author = ""
+                  Object.keys(json[key].authors).forEach(function(key1){
+                    author += json[key].authors[key1].name + ", "
+                  })
+                  html += "Author: "+author
+                }
+                html += "<img src='"+json[key].cover.large+"'>"
+              })
+              preview.innerHTML = html;
+
+            }
+            xhr.send(null)
+        }
       </script>
 </body>
 
