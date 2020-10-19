@@ -99,9 +99,19 @@
                       var json = xhr.response
                       document.getElementById('result').textContent = JSON.stringify(json)
                       var preview = document.getElementById('preview')
+                      var html = "";
                       Object.keys(json).forEach(function (key) { 
-                        preview.innerHTML += "<h3>"+json[key].title+" written by "+json[key].authors[0].name+"<h3><img src='"+json[key].cover.large+"'>"
+                        html = "<h3>"+json[key].title+"<h3>" 
+                        if(json[key].hasOwnProperty(authors)){
+                          var author = ""
+                          Object.keys(json[key].authors).forEach(function(key1){
+                            author += json[key].authors[key1].name + ", "
+                          })
+                          html += "Author: "+author
+                        }
+                        html += "<img src='"+json[key].cover.large+"'>"
                       })
+                      preview.innerHTML = html;
 
                     }
                     xhr.send(null)
